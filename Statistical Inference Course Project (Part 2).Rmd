@@ -1,0 +1,64 @@
+#Statistical Inference Course Project (Part 2)
+
+Now in the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package.
+
+Load the ToothGrowth data and perform some basic exploratory data analyses
+Provide a basic summary of the data.
+Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+State your conclusions and the assumptions needed for your conclusions.
+
+#Data Prep & Analysis
+```{r, echo = TRUE}
+
+library(ggplot2)
+# Load ToothGrowth data
+data("ToothGrowth")
+
+# Display a summary of the data
+summary(ToothGrowth)
+#Display the first few rows of data
+head(ToothGrowth)
+
+#Unique Values
+unique(ToothGrowth$len)
+
+unique(ToothGrowth$supp)
+
+unique(ToothGrowth$dose)
+
+#create plots 
+ToothGrowth$dose<-as.factor(ToothGrowth$dose)
+
+# Plot tooth length ('len') vs. the dose amount ('dose'), broken out by supplement delivery method ('supp')
+ggplot(aes(x=dose, y=len), data=ToothGrowth) + geom_boxplot(aes(fill=dose)) + xlab("Dose Amount") + ylab("Tooth Length") + facet_grid(~ supp) + ggtitle("Tooth Length vs. Dose Amount \nby Delivery Method") + 
+     theme(plot.title = element_text(lineheight=.8, face="bold"))
+
+
+
+# Plot tooth length ('len') vs. supplement delivery method ('supp') broken out by the dose amount ('dose')
+ggplot(aes(x=supp, y=len), data=ToothGrowth) + geom_boxplot(aes(fill=supp)) + xlab("Supplement Delivery") + ylab("Tooth Length") + facet_grid(~ dose) + ggtitle("Tooth Length vs. Delivery Method \nby Dose Amount") + 
+     theme(plot.title = element_text(lineheight=.8, face="bold"))
+
+```
+#Comparing tooth growth by supplement using a t-test.
+
+```{r, echo = TRUE}
+# run t-test
+t.test(len~supp,data=ToothGrowth)
+
+
+# run t-test using dose amounts 0.5 and 1.0
+ToothGrowth_sub <- subset(ToothGrowth, ToothGrowth$dose %in% c(1.0,0.5))
+t.test(len~dose,data=ToothGrowth_sub)
+
+# run t-test using dose amounts 0.5 and 2.0
+ToothGrowth_sub <- subset(ToothGrowth, ToothGrowth$dose %in% c(0.5,2.0))
+t.test(len~dose,data=ToothGrowth_sub)
+
+# run t-test using dose amounts 1.0 and 2.0
+ToothGrowth_sub <- subset(ToothGrowth, ToothGrowth$dose %in% c(1.0,2.0))
+t.test(len~dose,data=ToothGrowth_sub)
+
+```
+#Conclusion
+Supplement delivery method has no effect on tooth growth/length, however increased dosages do result in increased tooth length.
